@@ -13,8 +13,8 @@ describe('PrivAge privacy boundary', () => {
     const proofCircuit = contractSource.slice(contractSource.indexOf('export circuit proveEligibility'));
 
     expect(proofCircuit).toMatch(/export circuit proveEligibility\([^)]*\): Boolean/);
-    expect(proofCircuit).toContain('return disclose(false);');
-    expect(proofCircuit).toContain('return disclose(true);');
+    expect(proofCircuit).toContain('const eligible = disclose(age >= minimumAge);');
+    expect(proofCircuit).toContain('return eligible;');
     expect(proofCircuit).not.toMatch(/disclose\(age\)/);
   });
 

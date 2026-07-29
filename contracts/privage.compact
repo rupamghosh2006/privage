@@ -58,27 +58,31 @@ export circuit issueCredential(age: Uint<8>, salt: Bytes<32>): [] {
 export circuit proveEligibility(minimumAge: Uint<8>): Boolean {
   assert(
     minimumAge == 18 || minimumAge == 21 || minimumAge == 25,
-    "This gate supports thresholds of 18, 21, or 25 only",
+    "This gate supports thresholds of 18, 21, or 25 only"
   );
 
   const age = privateAge();
-  const commitment = credentialCommitment(age, credentialSalt());
+  // This reveals a salted one-way commitment, never the age or salt itself.
+  const commitment = disclose(credentialCommitment(age, credentialSalt()));
 
   assert(
     credentialCommitments.member(commitment),
-    "No trusted private credential was found for this proof",
+    "No trusted private credential was found for this proof"
   );
 
-  if (age < minimumAge) {
-    return disclose(false);
+  // The eligibility predicate is the circuit's sole intentional disclosure.
+  const eligible = disclose(age >= minimumAge);
+
+  if (!eligible) {
+    return false;
   }
 
-  const nullifier = proofNullifier(commitment, proofSecret());
+  // This one-way, domain-separated value prevents a credential replay.
+  const nullifier = disclose(proofNullifier(commitment, proofSecret()));
   assert(!usedProofNullifiers.member(nullifier), "This private credential has already been used for this gate");
 
   usedProofNullifiers.insert(disclose(nullifier));
   successfulProofs.increment(1);
 
-  return disclose(true);
+  return eligible;
 }
-
