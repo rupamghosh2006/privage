@@ -1,0 +1,84 @@
+pragma language_version 0.23;
+
+import CompactStandardLibrary;
+
+// PrivAge stores only the issuer identity, opaque credential commitments, and
+// one-way nullifiers. The age witness is never written to the public ledger.
+export ledger issuer: Bytes<32>;
+export ledger credentialCommitments: Set<Bytes<32>>;
+export ledger usedProofNullifiers: Set<Bytes<32>>;
+export ledger successfulProofs: Counter;
+
+// Issuer authentication stays local to the issuer's proof generation context.
+witness issuerSecret(): Bytes<32>;
+
+// These witnesses are supplied from the user's encrypted private credential.
+witness privateAge(): Uint<8>;
+witness credentialSalt(): Bytes<32>;
+witness proofSecret(): Bytes<32>;
+
+circuit issuerKey(secret: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([
+    pad(32, "privage:v1:issuer"),
+    secret,
+  ]);
+}
+
+circuit credentialCommitment(age: Uint<8>, salt: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<3, Bytes<32>>>([
+    pad(32, "privage:v1:credential"),
+    age as Bytes<32>,
+    salt,
+  ]);
+}
+
+circuit proofNullifier(commitment: Bytes<32>, secret: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<3, Bytes<32>>>([
+    pad(32, "privage:v1:nullifier"),
+    commitment,
+    secret,
+  ]);
+}
+
+constructor(initialIssuerKey: Bytes<32>) {
+  issuer = disclose(initialIssuerKey);
+}
+
+// An approved issuer adds an opaque commitment. The age and salt remain private
+// circuit inputs and are never added to the ledger.
+export circuit issueCredential(age: Uint<8>, salt: Bytes<32>): [] {
+  assert(issuerKey(issuerSecret()) == issuer, "Only the trusted issuer can issue a credential");
+
+  const commitment = credentialCommitment(age, salt);
+  credentialCommitments.insert(disclose(commitment));
+}
+
+// The only circuit output is the eligibility boolean. An ineligible proof makes
+// no ledger mutation; an eligible proof consumes an unlinkable nullifier.
+export circuit proveEligibility(minimumAge: Uint<8>): Boolean {
+  assert(
+    minimumAge == 18 || minimumAge == 21 || minimumAge == 25,
+    "This gate supports thresholds of 18, 21, or 25 only",
+  );
+
+  const age = privateAge();
+  const commitment = credentialCommitment(age, credentialSalt());
+
+  assert(
+    credentialCommitments.member(commitment),
+    "No trusted private credential was found for this proof",
+  );
+
+  if (age < minimumAge) {
+    return disclose(false);
+  }
+
+  const nullifier = proofNullifier(commitment, proofSecret());
+  assert(!usedProofNullifiers.member(nullifier), "This private credential has already been used for this gate");
+
+  usedProofNullifiers.insert(disclose(nullifier));
+  successfulProofs.increment(1);
+
+  return disclose(true);
+}
+
