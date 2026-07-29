@@ -24,6 +24,12 @@ circuit issuerKey(secret: Bytes<32>): Bytes<32> {
   ]);
 }
 
+// A deployer uses this pure helper to derive the public issuer key. The
+// corresponding secret remains in the issuer's private witness context.
+export pure circuit deriveIssuerKey(secret: Bytes<32>): Bytes<32> {
+  return issuerKey(secret);
+}
+
 circuit credentialCommitment(age: Uint<8>, salt: Bytes<32>): Bytes<32> {
   return persistentHash<Vector<3, Bytes<32>>>([
     pad(32, "privage:v1:credential"),

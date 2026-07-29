@@ -4,6 +4,6 @@ coverage/
 contracts/managed/
 .env
 .env.*
+deployment.preprod.json
 !.env.example
 *.local
-
