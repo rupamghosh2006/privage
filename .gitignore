@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+contracts/managed/
+.env
+.env.*
+!.env.example
+*.local
+
