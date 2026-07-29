@@ -1,6 +1,6 @@
 # PrivAge
 
-[![CI](https://github.com/YOUR_GITHUB_USERNAME/privage/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/YOUR_GITHUB_USERNAME/privage/actions/workflows/ci.yml)
+[![CI](https://github.com/rupamghosh2006/privage/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/rupamghosh2006/privage/actions/workflows/ci.yml)
 
 > Prove that a private, issuer-backed credential satisfies an eligibility policy—without revealing an age or date of birth.
 
@@ -96,7 +96,7 @@ The suite covers an eligible witness, an ineligible witness, the threshold bound
 4. runs the privacy and eligibility test suite; and
 5. produces a production Vite build.
 
-Replace `YOUR_GITHUB_USERNAME` in the badge URL after creating the public GitHub repository. A green badge appears after the first successful GitHub Actions run.
+The badge reflects the latest workflow run on `main`. It turns green after the first successful GitHub Actions run.
 
 ## Product Proposal
 
