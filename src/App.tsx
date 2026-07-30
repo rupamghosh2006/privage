@@ -49,18 +49,21 @@ const App = () => {
   return (
     <div className="app-shell">
       <header className="site-header">
-        <a className="brand" href="#top" aria-label="PrivAge home"><span aria-hidden="true">◐</span> PrivAge</a>
-        <span className="network-chip"><span className="status-dot" /> Midnight Preview</span>
+        <a className="brand" href="#top" aria-label="PrivAge home">
+          <span className="brand-mark" aria-hidden="true" />
+          <span>PrivAge</span>
+        </a>
+        <span className="network-chip"><span className="status-dot" /> PREVIEW / SYNCED</span>
       </header>
 
       <main id="top">
         <section className="hero" aria-labelledby="page-title">
           <div className="hero-copy">
             <p className="eyebrow">PRIVATE ELIGIBILITY GATE</p>
-            <h1 id="page-title">Prove access.<br /><em>Keep your details private.</em></h1>
+            <h1 id="page-title">Prove access.<br /><em>Keep the age private.</em></h1>
             <p className="hero-text">PrivAge uses a Midnight zero-knowledge proof to verify an eligibility policy without exposing your age or date of birth.</p>
           </div>
-          <div className="moon-mark" aria-hidden="true"><span>◐</span></div>
+          <div className="moon-mark" aria-hidden="true"><span>01</span><small>PRIVATE PROOF</small></div>
         </section>
 
         <WalletConnect
@@ -99,7 +102,7 @@ const App = () => {
           </div>
 
           <button className="button primary proof-button" type="button" onClick={generateProof} disabled={isGenerating}>
-            {isGenerating ? <><span className="spinner" aria-hidden="true" /> Generating private proof…</> : 'Generate eligibility proof'}
+            {isGenerating ? <><span className="spinner" aria-hidden="true" /> Generating private proof...</> : 'Generate eligibility proof'}
           </button>
           <p className="proof-note">Your private credential is read by a local witness. PrivAge never asks you to type or reveal an age.</p>
         </section>
@@ -108,7 +111,7 @@ const App = () => {
         <PrivacyPanel threshold={threshold} />
       </main>
 
-      <footer>PrivAge · Built for Midnight selective disclosure</footer>
+      <footer>PRIVAGE / BUILT FOR MIDNIGHT SELECTIVE DISCLOSURE</footer>
     </div>
   );
 };
