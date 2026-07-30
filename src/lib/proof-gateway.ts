@@ -24,14 +24,17 @@ declare global {
   }
 }
 
-const configuredContractAddress = import.meta.env.VITE_MIDNIGHT_CONTRACT_ADDRESS?.trim();
+// The Preview address is public contract configuration, never private wallet data.
+// A deployment environment can override it with VITE_MIDNIGHT_CONTRACT_ADDRESS.
+const previewContractAddress = '5008fd088a5064c2dc69e2b085547e5e3e4922c7e12747d961a22722348bfb39';
+const configuredContractAddress = import.meta.env.VITE_MIDNIGHT_CONTRACT_ADDRESS?.trim() || previewContractAddress;
 
 export const hasConfiguredContract = Boolean(configuredContractAddress);
 
 export const proveEligibility = async (minimumAge: AgeThreshold): Promise<EligibilityResult> => {
   if (!configuredContractAddress) {
     throw new Error(
-      'The Preprod contract address is not configured. Set VITE_MIDNIGHT_CONTRACT_ADDRESS after deployment.',
+      'The Preview contract address is not configured. Set VITE_MIDNIGHT_CONTRACT_ADDRESS after deployment.',
     );
   }
 
@@ -52,4 +55,3 @@ export const proveEligibility = async (minimumAge: AgeThreshold): Promise<Eligib
 
   return { eligible: result.eligible };
 };
-

@@ -12,10 +12,10 @@ import { Contract } from './managed/privage/contract/index.js';
 const contractDirectory = path.dirname(fileURLToPath(import.meta.url));
 export const zkConfigPath = path.join(contractDirectory, 'managed', 'privage');
 
-export const compiledPrivAgeContract = CompiledContract.make(
+export const createCompiledPrivAgeContract = (witnesses) => CompiledContract.make(
   'PrivAgeContract',
   Contract,
 ).pipe(
-  CompiledContract.withVacantWitnesses,
+  CompiledContract.withWitnesses(witnesses),
   CompiledContract.withCompiledFileAssets(zkConfigPath),
 );

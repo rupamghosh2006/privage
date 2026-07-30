@@ -2,7 +2,7 @@ export type WalletInitialApi = {
   readonly name: string;
   readonly icon?: string;
   readonly apiVersion: string;
-  connect(network: 'preprod'): Promise<WalletConnectedApi>;
+  connect(network: 'preview'): Promise<WalletConnectedApi>;
 };
 
 type WalletConnectedApi = {
@@ -40,11 +40,11 @@ export const connectWallet = async (walletId: string): Promise<ConnectedWallet> 
     throw new Error('That Midnight wallet is no longer available. Refresh the page and try again.');
   }
 
-  const connected = await wallet.connect('preprod');
+  const connected = await wallet.connect('preview');
   const status = await connected.getConnectionStatus();
 
   if (status.status !== 'connected') {
-    throw new Error('The wallet did not complete the Preprod connection. Please approve the request and try again.');
+    throw new Error('The wallet did not complete the Preview connection. Please approve the request and try again.');
   }
 
   const { unshieldedAddress } = await connected.getUnshieldedAddress();
@@ -59,4 +59,3 @@ export const connectWallet = async (walletId: string): Promise<ConnectedWallet> 
 
 export const shortenAddress = (address: string): string =>
   `${address.slice(0, 8)}…${address.slice(-6)}`;
-

@@ -13,7 +13,7 @@ export const PrivacyPanel = ({ threshold }: PrivacyPanelProps) => (
     <div className="privacy-grid">
       <article className="privacy-item public">
         <span className="privacy-label">Public information</span>
-        <p>Preprod network, the selected {threshold}+ policy, and opaque anti-replay data.</p>
+        <p>Preview network, the selected {threshold}+ policy, and opaque anti-replay data.</p>
       </article>
       <article className="privacy-item private">
         <span className="privacy-label">Private information</span>
@@ -26,4 +26,3 @@ export const PrivacyPanel = ({ threshold }: PrivacyPanelProps) => (
     </div>
   </section>
 );
-

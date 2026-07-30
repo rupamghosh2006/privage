@@ -20,7 +20,7 @@ export const WalletConnect = ({
   <section className="wallet-card" aria-labelledby="wallet-heading">
     <div>
       <p className="eyebrow">Wallet</p>
-      <h2 id="wallet-heading">{wallet ? 'Wallet connected' : 'Connect to Preprod'}</h2>
+      <h2 id="wallet-heading">{wallet ? 'Wallet connected' : 'Connect to Preview'}</h2>
       {wallet ? (
         <p className="muted" title={wallet.address}>
           {wallet.name} · {shortenAddress(wallet.address)}
@@ -35,7 +35,7 @@ export const WalletConnect = ({
         Disconnect
       </button>
     ) : wallets.length === 0 ? (
-      <p className="wallet-help">No Midnight wallet detected. Install or unlock a Preprod-compatible wallet, then refresh.</p>
+      <p className="wallet-help">No Midnight wallet detected. Install or unlock a Preview-compatible wallet, then refresh.</p>
     ) : (
       <div className="wallet-options" aria-label="Available Midnight wallets">
         {wallets.map((option) => (
@@ -55,4 +55,3 @@ export const WalletConnect = ({
     {error ? <p className="notice error" role="alert">{error}</p> : null}
   </section>
 );
-

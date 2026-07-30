@@ -12,7 +12,9 @@
     "compile": "node scripts/compile-contract.mjs",
     "proof:up": "docker compose up -d --wait proof-server",
     "proof:down": "docker compose stop proof-server",
+    "deploy": "npm run deploy:preview",
     "deploy:preprod": "node scripts/deploy-preprod.mjs",
+    "deploy:preview": "MIDNIGHT_NETWORK=preview node scripts/deploy-preprod.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "check": "npm run compile && npm test && npm run build"
@@ -29,7 +31,6 @@
     "@midnight-ntwrk/midnight-js-types": "4.1.1",
     "@midnight-ntwrk/midnight-js-utils": "4.1.1",
     "@midnight-ntwrk/testkit-js": "4.1.1",
-    "@midnight-ntwrk/wallet-sdk": "1.2.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "rxjs": "7.8.2",

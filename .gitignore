@@ -4,6 +4,9 @@ coverage/
 contracts/managed/
 .env
 .env.*
-deployment.preprod.json
+deployment.*.json
+deployment.*.log
 !.env.example
 *.local
+logs/*
+midnight-level-db/

@@ -50,7 +50,7 @@ const App = () => {
     <div className="app-shell">
       <header className="site-header">
         <a className="brand" href="#top" aria-label="PrivAge home"><span aria-hidden="true">◐</span> PrivAge</a>
-        <span className="network-chip"><span className="status-dot" /> Midnight Preprod</span>
+        <span className="network-chip"><span className="status-dot" /> Midnight Preview</span>
       </header>
 
       <main id="top">
@@ -114,4 +114,3 @@ const App = () => {
 };
 
 export default App;
-

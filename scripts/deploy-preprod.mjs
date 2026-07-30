@@ -18,7 +18,7 @@ import {
 import { ttlOneHour } from '@midnight-ntwrk/midnight-js-utils';
 import { FluentWalletBuilder, waitForFunds } from '@midnight-ntwrk/testkit-js';
 import {
-  compiledPrivAgeContract,
+  createCompiledPrivAgeContract,
   pureCircuits,
   zkConfigPath,
 } from '../contracts/index.mjs';
@@ -26,36 +26,84 @@ import {
 // GraphQL subscriptions in Node require a WebSocket implementation.
 globalThis.WebSocket = WebSocket;
 
+const network = process.env.MIDNIGHT_NETWORK ?? 'preprod';
+const networkConfigs = {
+  preprod: {
+    networkId: 'preprod',
+    walletNetworkId: 'preprod',
+    indexer: 'https://indexer.preprod.midnight.network/api/v4/graphql',
+    indexerWS: 'wss://indexer.preprod.midnight.network/api/v4/graphql/ws',
+    node: 'https://rpc.preprod.midnight.network',
+    nodeWS: 'wss://rpc.preprod.midnight.network',
+    faucet: 'https://midnight-tmnight-preprod.nethermind.dev/',
+  },
+  preview: {
+    networkId: 'preview',
+    walletNetworkId: 'preview',
+    indexer: 'https://indexer.preview.midnight.network/api/v4/graphql',
+    indexerWS: 'wss://indexer.preview.midnight.network/api/v4/graphql/ws',
+    node: 'https://rpc.preview.midnight.network',
+    nodeWS: 'wss://rpc.preview.midnight.network',
+    faucet: 'https://midnight-tmnight-preview.nethermind.dev/',
+  },
+};
+const selectedNetwork = networkConfigs[network];
+if (!selectedNetwork) {
+  throw new Error(`Unsupported Midnight network '${network}'. Use 'preprod' or 'preview'.`);
+}
 const config = {
-  networkId: 'preprod',
-  walletNetworkId: 'preprod',
-  indexer: 'https://indexer.preprod.midnight.network/api/v4/graphql',
-  indexerWS: 'wss://indexer.preprod.midnight.network/api/v4/graphql/ws',
-  node: 'https://rpc.preprod.midnight.network',
-  nodeWS: 'wss://rpc.preprod.midnight.network',
+  ...selectedNetwork,
   proofServer: process.env.MIDNIGHT_PROOF_SERVER ?? 'http://127.0.0.1:6300',
-  faucet: 'https://midnight-tmnight-preprod.nethermind.dev/',
 };
 
 function getWalletSecret() {
-  const mnemonic = process.env.MIDNIGHT_PREPROD_MNEMONIC?.trim().replace(/\s+/g, ' ');
-  const seed = process.env.MIDNIGHT_PREPROD_SEED?.trim();
+  const credentialPrefix = `MIDNIGHT_${network.toUpperCase()}`;
+  const mnemonicName = `${credentialPrefix}_MNEMONIC`;
+  const seedName = `${credentialPrefix}_SEED`;
+  const mnemonic = process.env[mnemonicName]?.trim().replace(/\s+/g, ' ');
+  const seed = process.env[seedName]?.trim();
 
   if (mnemonic && seed) {
-    throw new Error('Set only one Preprod wallet credential: mnemonic or seed.');
+    throw new Error(`Set only one ${network} wallet credential: mnemonic or seed.`);
   }
   if (mnemonic) return { kind: 'mnemonic', value: mnemonic };
   if (seed && /^[0-9a-fA-F]{64}$/.test(seed)) return { kind: 'seed', value: seed };
-  throw new Error('MIDNIGHT_PREPROD_SEED must be a 64-character hex value, or configure one mnemonic.');
+  throw new Error(`${seedName} must be a 64-character hex value, or configure ${mnemonicName}.`);
 }
 
 function progressComplete(progress) {
   return Boolean(progress && typeof progress.isStrictlyComplete === 'function' && progress.isStrictlyComplete());
 }
 
-async function waitForWalletSync(wallet, timeout = 20 * 60_000) {
+function formatProgress(progress) {
+  if (!progress || typeof progress !== 'object') return 'unknown';
+  const applied = progress.appliedIndex ?? progress.appliedId;
+  const target = progress.highestRelevantWalletIndex ?? progress.highestTransactionId;
+  if (applied === undefined || target === undefined) {
+    return progressComplete(progress) ? 'complete' : 'pending';
+  }
+  return `${progressComplete(progress) ? 'complete' : 'pending'} (${applied}/${target})`;
+}
+
+async function waitForWalletSync(
+  wallet,
+  timeout = Number(process.env.MIDNIGHT_SYNC_TIMEOUT_MS ?? 4 * 60 * 60_000),
+) {
+  let emissionCount = 0;
   await Rx.firstValueFrom(
     wallet.state().pipe(
+      Rx.tap((state) => {
+        emissionCount += 1;
+        // A wallet can emit tens of thousands of scan updates. Periodic logs
+        // retain useful visibility without making terminal I/O the bottleneck.
+        if (emissionCount !== 1 && emissionCount % 1_000 !== 0) return;
+        console.log(
+          `Wallet sync #${emissionCount}: ` +
+          `shielded=${formatProgress(state.shielded.state.progress)}, ` +
+          `dust=${formatProgress(state.dust.state.progress)}, ` +
+          `unshielded=${formatProgress(state.unshielded.progress)}`,
+        );
+      }),
       Rx.filter((state) =>
         progressComplete(state.shielded.state.progress) &&
         progressComplete(state.dust.state.progress) &&
@@ -63,7 +111,9 @@ async function waitForWalletSync(wallet, timeout = 20 * 60_000) {
       ),
       Rx.timeout({
         each: timeout,
-        with: () => Rx.throwError(() => new Error('Wallet sync timed out after 20 minutes.')),
+        with: () => Rx.throwError(
+          () => new Error(`Wallet sync timed out after ${Math.round(timeout / 60_000)} minutes.`),
+        ),
       }),
     ),
   );
@@ -106,17 +156,30 @@ function deriveIssuerSecret(walletSecret) {
   // Domain separation makes this issuer witness distinct from the wallet seed.
   return new Uint8Array(
     createHash('sha256')
-      .update('privage:preprod:issuer:v1', 'utf8')
+      .update(`privage:${network}:issuer:v1`, 'utf8')
       .update(walletSecret, 'utf8')
       .digest(),
   );
+}
+
+function createDeploymentWitnesses(issuerSecret) {
+  // The constructor does not invoke witnesses, but Compact requires every
+  // declared witness to be present when it instantiates the contract. The
+  // issuer witness is deterministic; credential-related witnesses are safe
+  // placeholders for deployment only and are never disclosed or used here.
+  return {
+    issuerSecret: (context) => [context.privateState, issuerSecret],
+    privateAge: (context) => [context.privateState, 0n],
+    credentialSalt: (context) => [context.privateState, new Uint8Array(32)],
+    proofSecret: (context) => [context.privateState, new Uint8Array(32)],
+  };
 }
 
 const walletSecret = getWalletSecret();
 const wallet = await buildWallet(walletSecret);
 
 try {
-  console.log('Starting and synchronizing the Preprod wallet...');
+  console.log(`Starting and synchronizing the ${network} wallet...`);
   setNetworkId(config.networkId);
   await wallet.start();
   await waitForWalletSync(wallet.wallet);
@@ -124,11 +187,15 @@ try {
   // Ensures the faucet-funded tNIGHT is registered for DUST operations.
   await waitForFunds(wallet.wallet, config, false, wallet.unshieldedKeystore);
 
-  const issuerKey = pureCircuits.deriveIssuerKey(deriveIssuerSecret(walletSecret.value));
+  const issuerSecret = deriveIssuerSecret(walletSecret.value);
+  const issuerKey = pureCircuits.deriveIssuerKey(issuerSecret);
+  const compiledPrivAgeContract = createCompiledPrivAgeContract(
+    createDeploymentWitnesses(issuerSecret),
+  );
   const zkConfigProvider = new NodeZkConfigProvider(zkConfigPath);
   const providers = {
     privateStateProvider: levelPrivateStateProvider({
-      privateStateStoreName: `privage-preprod-${Date.now()}`,
+      privateStateStoreName: `privage-${network}-${Date.now()}`,
       privateStoragePasswordProvider: () => 'privage-local-private-state-v1',
       accountId: wallet.getCoinPublicKey(),
     }),
@@ -139,7 +206,7 @@ try {
     midnightProvider: wallet,
   };
 
-  console.log('Submitting PrivAge deployment transaction to Midnight Preprod...');
+  console.log(`Submitting PrivAge deployment transaction to Midnight ${network}...`);
   const deployed = await deployContract(providers, {
     compiledContract: compiledPrivAgeContract,
     args: [issuerKey],
@@ -149,12 +216,12 @@ try {
   const contractAddress = deployed.deployTxData.public.contractAddress;
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   await writeFile(
-    path.join(root, 'deployment.preprod.json'),
-    `${JSON.stringify({ network: 'preprod', contractAddress, deployedAt: new Date().toISOString() }, null, 2)}\n`,
+    path.join(root, `deployment.${network}.json`),
+    `${JSON.stringify({ network, contractAddress, deployedAt: new Date().toISOString() }, null, 2)}\n`,
     'utf8',
   );
-  console.log(`PrivAge deployed to Midnight Preprod: ${contractAddress}`);
-  console.log('Deployment record written to deployment.preprod.json.');
+  console.log(`PrivAge deployed to Midnight ${network}: ${contractAddress}`);
+  console.log(`Deployment record written to deployment.${network}.json.`);
 } finally {
   await wallet.stop().catch(() => undefined);
 }

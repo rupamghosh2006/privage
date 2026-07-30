@@ -12,7 +12,7 @@ Deployment pending. Add the production URL here before submission.
 
 | Network | Address |
 | --- | --- |
-| Preprod | **Deployment pending — add the PrivAge contract address before submission** |
+| Preview | `5008fd088a5064c2dc69e2b085547e5e3e4922c7e12747d961a22722348bfb39` |
 
 ## What This Does
 
@@ -48,7 +48,7 @@ The issuer is trusted to verify a person's eligibility source before calling `is
 
 - Node.js 22.12 or newer
 - npm 10 or newer
-- A Midnight-compatible browser wallet configured for Preprod
+- A Midnight-compatible browser wallet configured for Preview
 - Midnight Compact for contract compilation. Midnight supports Linux/macOS natively; use an Ubuntu environment for this project on Windows.
 
 ## Setup & Run Locally
@@ -58,10 +58,11 @@ npm ci
 copy .env.example .env
 ```
 
-After deploying the contract, put its Preprod address in `.env`:
+The deployed Preview contract address is included in `.env.example`. Keep this
+value in `.env` when running the frontend:
 
 ```bash
-VITE_MIDNIGHT_CONTRACT_ADDRESS=your_preprod_contract_address
+VITE_MIDNIGHT_CONTRACT_ADDRESS=5008fd088a5064c2dc69e2b085547e5e3e4922c7e12747d961a22722348bfb39
 ```
 
 Then start the frontend:
@@ -104,7 +105,7 @@ See [PROPOSAL.md](PROPOSAL.md).
 
 ## Before Submission
 
-1. Deploy `contracts/privage.compact` to Midnight Preprod and replace the contract-address placeholder above.
+1. The PrivAge contract is deployed on Midnight Preview at the address listed above.
 2. Set `VITE_MIDNIGHT_CONTRACT_ADDRESS` in your deployment platform and add the live URL above.
 3. Push `main`, wait for the CI badge to turn green, and capture the test output.
 4. Complete every placeholder in [PROPOSAL.md](PROPOSAL.md), record the one-minute demo, and submit the proposal for approval.
