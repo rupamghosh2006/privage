@@ -15,11 +15,11 @@
 | Requirement | Status | Evidence / next action |
 | --- | --- | --- |
 | Public GitHub repository with complete README | Done | [rupamghosh2006/privage](https://github.com/rupamghosh2006/privage) |
-| Live demo link | Pending | Deploy the Vite frontend and replace the placeholder in [Live Demo](#live-demo). |
+| Live demo link | Done | [privage-orcin.vercel.app](https://privage-orcin.vercel.app/) |
 | Midnight privacy model | Done | Compact contract, private-witness demo flow, and [Privacy Model](#privacy-model). |
 | 3+ passing tests | Done | 12 Vitest tests currently pass. See [Testing](#testing). |
 | CI/CD workflow with passing run | Done | [CI workflow](.github/workflows/ci.yml) compiles, tests, and builds on every push and pull request. |
-| Test-output screenshot | Pending | Run `npm test`, capture the terminal output, and add it under `screenshots/`. |
+| Test-output screenshot | Done | [12 passing Vitest tests](screenshots/tests.png) |
 | CI badge / workflow evidence | Done | CI badge above and [workflow file](.github/workflows/ci.yml). |
 | One-minute demo video | Pending | Record the [demo script](#one-minute-demo-script) and add the link below. |
 | Privacy-model explanation | Done | [Privacy Model](#privacy-model) states what observers can and cannot learn. |
@@ -28,15 +28,15 @@
 
 ## Live Demo
 
-**Deployment URL:** _Pending deployment._
+**Deployment URL:** [https://privage-orcin.vercel.app/](https://privage-orcin.vercel.app/)
 
-Deploy this Vite application to Vercel, Netlify, or a similar static host. Configure:
+The hosted Vite application is configured with:
 
 ```bash
 VITE_MIDNIGHT_CONTRACT_ADDRESS=5008fd088a5064c2dc69e2b085547e5e3e4922c7e12747d961a22722348bfb39
 ```
 
-Then replace the placeholder above with the resulting public URL before submission.
+The Preview contract address is public configuration only; no private credential data is deployed with the frontend.
 
 ## Project at a Glance
 
@@ -106,7 +106,9 @@ Current coverage includes 12 passing tests for:
 - the absence of public age/date fields in the Compact ledger and browser UI;
 - demo credential issuance, wallet binding, access grant, access denial, and proof-gateway integration.
 
-Before submitting, capture the passing terminal output and save it as `screenshots/tests_passing.png`, then change the related checklist item to **Done**.
+### Test Evidence
+
+![12 passing PrivAge tests](screenshots/tests.png)
 
 ## CI/CD
 
