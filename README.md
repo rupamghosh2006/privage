@@ -14,6 +14,15 @@ Deployment pending. Add the production URL here before submission.
 | --- | --- |
 | Preview | `5008fd088a5064c2dc69e2b085547e5e3e4922c7e12747d961a22722348bfb39` |
 
+## Deployment Evidence
+
+The screenshots below record the successful CLI deployment and the independently
+verified Midnight Explorer record on Preview.
+
+![Preview deployment terminal output](screenshots/preview_deployed.png)
+
+![PrivAge contract in Midnight Explorer](screenshots/midnight_explorer.png)
+
 ## What This Does
 
 PrivAge is an Age / Eligibility Gate for Midnight. An approved issuer writes only an opaque commitment for a private credential. When a user asks for access, the Compact circuit reads the private witness from their wallet, checks the selected policy (`18+`, `21+`, or `25+`), and returns only an eligibility boolean.
