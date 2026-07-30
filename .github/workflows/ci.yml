@@ -30,6 +30,7 @@ jobs:
         shell: bash
         run: |
           curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+          compact update
           echo "$HOME/.compact/bin" >> "$GITHUB_PATH"
 
       - name: Compile PrivAge contract
@@ -37,7 +38,7 @@ jobs:
         run: |
           compact --version
           cd contracts
-          compact compile privage.compact managed/privage
+          COMPACT_BACKEND=wasm compact compile privage.compact managed/privage
 
       - name: Run privacy and eligibility tests
         run: npm test
