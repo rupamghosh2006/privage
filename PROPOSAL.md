@@ -1,5 +1,7 @@
 # Product Proposal
 
+> **Submission status:** Submitted for programme approval.
+
 ## What is the product, and who uses it?
 
 **PrivAge** is a privacy-preserving age verification platform that allows users to prove they meet a required minimum age (such as 18+, 21+, or 25+) without revealing their actual age, date of birth, or identity.

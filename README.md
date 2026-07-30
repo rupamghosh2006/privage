@@ -21,9 +21,9 @@
 | CI/CD workflow with passing run | Done | [CI workflow](.github/workflows/ci.yml) compiles, tests, and builds on every push and pull request. |
 | Test-output screenshot | Done | [12 passing Vitest tests](screenshots/tests.png) |
 | CI badge / workflow evidence | Done | CI badge above and [workflow file](.github/workflows/ci.yml). |
-| One-minute demo video | Pending | Record the [demo script](#one-minute-demo-script) and add the link below. |
+| One-minute demo video | Done | [Watch the PrivAge demo video](https://res.cloudinary.com/ddp0nf4uv/video/upload/v1785435197/Video_Project_19_sp4n0o.mp4) |
 | Privacy-model explanation | Done | [Privacy Model](#privacy-model) states what observers can and cannot learn. |
-| Product proposal submitted for approval | Pending external step | [PROPOSAL.md](PROPOSAL.md) is complete; submit it to the programme for approval. |
+| Product proposal submitted for approval | Done | [PROPOSAL.md](PROPOSAL.md) has been submitted for programme approval. |
 | 10+ meaningful commits | Done | More than 10 meaningful commits on the current project branch. |
 
 ## Live Demo
@@ -37,6 +37,14 @@ VITE_MIDNIGHT_CONTRACT_ADDRESS=5008fd088a5064c2dc69e2b085547e5e3e4922c7e12747d96
 ```
 
 The Preview contract address is public configuration only; no private credential data is deployed with the frontend.
+
+## Demo Video
+
+<video controls width="720" src="https://res.cloudinary.com/ddp0nf4uv/video/upload/v1785435197/Video_Project_19_sp4n0o.mp4">
+  Your browser does not support embedded video. Use the direct link below.
+</video>
+
+[Watch the one-minute PrivAge demo video](https://res.cloudinary.com/ddp0nf4uv/video/upload/v1785435197/Video_Project_19_sp4n0o.mp4)
 
 ## Project at a Glance
 
@@ -142,11 +150,11 @@ Use this sequence when recording the submission video:
 6. Select `21+` or `25+`, generate the proof, and show **Access denied**.
 7. Close by showing the Preview contract address, CI badge, and privacy-model section in this README.
 
-**Video URL:** _Pending recording._
+**Video URL:** [Watch the one-minute PrivAge demo video](https://res.cloudinary.com/ddp0nf4uv/video/upload/v1785435197/Video_Project_19_sp4n0o.mp4)
 
 ## Product Proposal
 
-The complete product proposal is in [PROPOSAL.md](PROPOSAL.md). Submit this document through the programme's approval process and update the checklist once approval is received.
+The complete product proposal is in [PROPOSAL.md](PROPOSAL.md) and has been submitted for programme approval.
 
 ## Local Setup
 
