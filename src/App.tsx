@@ -50,8 +50,8 @@ const App = () => {
     <div className="app-shell">
       <header className="site-header">
         <a className="brand" href="#top" aria-label="PrivAge home">
-          <span className="brand-mark" aria-hidden="true" />
-          <span>PrivAge</span>
+          <img className="brand-logo" src="/logo.png" alt="" />
+          <span className="brand-wordmark">PrivAge</span>
         </a>
         <span className="network-chip"><span className="status-dot" /> PREVIEW / SYNCED</span>
       </header>
@@ -63,7 +63,9 @@ const App = () => {
             <h1 id="page-title">Prove access.<br /><em>Keep the age private.</em></h1>
             <p className="hero-text">PrivAge uses a Midnight zero-knowledge proof to verify an eligibility policy without exposing your age or date of birth.</p>
           </div>
-          <div className="moon-mark" aria-hidden="true"><span>01</span><small>PRIVATE PROOF</small></div>
+          <div className="moon-mark">
+            <img className="hero-logo" src="/logo.png" alt="PrivAge private eligibility proof" />
+          </div>
         </section>
 
         <WalletConnect
