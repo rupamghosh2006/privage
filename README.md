@@ -1,6 +1,6 @@
 # PrivAge
 
-[![CI](https://github.com/rupamghosh2006/privage/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/rupamghosh2006/privage/actions/workflows/ci.yml)
+[![CI](https://github.com/rupamghosh2006/privage/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/rupamghosh2006/privage/actions/workflows/ci.yml)
 
 > Prove that a private, issuer-backed credential satisfies an eligibility policy—without revealing an age or date of birth.
 
@@ -89,7 +89,7 @@ The suite covers an eligible witness, an ineligible witness, the threshold bound
 
 ## CI/CD
 
-`.github/workflows/ci.yml` runs on pull requests and pushes to `main`. It:
+`.github/workflows/ci.yml` runs on pull requests and pushes to `main` or `master`. It:
 
 1. installs Node.js 22 and locked npm dependencies;
 2. installs Midnight Compact;
@@ -97,7 +97,7 @@ The suite covers an eligible witness, an ineligible witness, the threshold bound
 4. runs the privacy and eligibility test suite; and
 5. produces a production Vite build.
 
-The badge reflects the latest workflow run on `main`. It turns green after the first successful GitHub Actions run.
+The badge reflects the latest workflow run on `master`. It turns green after the first successful GitHub Actions run.
 
 ## Product Proposal
 
@@ -107,5 +107,5 @@ See [PROPOSAL.md](PROPOSAL.md).
 
 1. The PrivAge contract is deployed on Midnight Preview at the address listed above.
 2. Set `VITE_MIDNIGHT_CONTRACT_ADDRESS` in your deployment platform and add the live URL above.
-3. Push `main`, wait for the CI badge to turn green, and capture the test output.
+3. Push `master`, wait for the CI badge to turn green, and capture the test output.
 4. Complete every placeholder in [PROPOSAL.md](PROPOSAL.md), record the one-minute demo, and submit the proposal for approval.
