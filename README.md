@@ -51,7 +51,9 @@ PrivAge is an **Age / Eligibility Gate** built for Midnight selective disclosure
 
 | Network | Contract address |
 | --- | --- |
-| Midnight Preview | `5008fd088a5064c2dc69e2b085547e5e3e4922c7e12747d961a22722348bfb39` |
+| Midnight Preview | [`5008fd088a5064c2dc69e2b085547e5e3e4922c7e12747d961a22722348bfb39`](https://preview.midnightexplorer.com/contracts/0x5008fd088a5064c2dc69e2b085547e5e3e4922c7e12747d961a22722348bfb39) |
+
+[Open PrivAge in Midnight Explorer](https://preview.midnightexplorer.com/contracts/0x5008fd088a5064c2dc69e2b085547e5e3e4922c7e12747d961a22722348bfb39)
 
 ## Demo Flow
 
