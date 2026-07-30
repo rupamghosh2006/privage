@@ -27,12 +27,23 @@ verified Midnight Explorer record on Preview.
 
 PrivAge is an Age / Eligibility Gate for Midnight. An approved issuer writes only an opaque commitment for a private credential. When a user asks for access, the Compact circuit reads the private witness from their wallet, checks the selected policy (`18+`, `21+`, or `25+`), and returns only an eligibility boolean.
 
-The UI deliberately has no age or date input. A compatible wallet integration supplies the encrypted private credential to the witness layer, so users do not type sensitive data into the website.
+The UI deliberately has no age or date input. A compatible wallet integration can supply an encrypted private credential to the witness layer, so users never type sensitive data into the website.
+
+## Demo Credential Flow
+
+The frontend includes a working **local demo issuer** so the full eligibility journey can be recorded without an external issuer service:
+
+1. Connect a Midnight Preview wallet.
+2. Select **Issue demo credential**. A synthetic issuer credential is bound to that wallet for the current browser session.
+3. Choose a policy and select **Generate eligibility proof**.
+4. PrivAge returns only **Verified eligible** or **Access denied**. The underlying witness is never rendered, logged, or sent to Preview.
+
+This presentation flow evaluates the same private-witness eligibility model as the Compact circuit, but it deliberately does **not** submit a Preview transaction or claim to be a production wallet proof. A production issuer must hold the issuer secret server-side, issue the on-chain commitment through `issueCredential`, and deliver the corresponding encrypted witness to the user's wallet.
 
 ## Privacy Model
 
 - **PUBLIC:** the issuer identity, opaque credential commitments, one-way proof nullifiers, and the aggregate number of successful proofs.
-- **PRIVATE:** the age, date of birth, credential salt, issuer secret, and proof secret. These values are witnesses and never enter a public ledger field.
+- **PRIVATE:** the age, date of birth, credential salt, issuer secret, and proof secret. These values are witnesses and never enter a public ledger field; the demo credential keeps its witness only in browser memory.
 - **PROVED without revealing:** whether a private credential satisfies the selected policy.
 
 ## Privacy Claim

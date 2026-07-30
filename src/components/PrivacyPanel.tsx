@@ -17,7 +17,7 @@ export const PrivacyPanel = ({ threshold }: PrivacyPanelProps) => (
       </article>
       <article className="privacy-item private">
         <span className="privacy-label">Private information</span>
-        <p>Your age, date of birth, credential salt, and proof secret remain in your encrypted wallet state.</p>
+        <p>Your age, date of birth, credential salt, and proof secret remain in the local private witness. Production wallet integrations keep this state encrypted.</p>
       </article>
       <article className="privacy-item proved">
         <span className="privacy-label">Proved without revealing</span>

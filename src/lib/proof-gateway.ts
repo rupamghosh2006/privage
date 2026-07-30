@@ -1,4 +1,5 @@
 import type { AgeThreshold, EligibilityResult } from './eligibility';
+import { hasDemoCredential, proveDemoEligibility } from './demo-credential';
 
 export type WalletProofStatus = 'connected' | 'disconnected';
 
@@ -31,20 +32,44 @@ const configuredContractAddress = import.meta.env.VITE_MIDNIGHT_CONTRACT_ADDRESS
 
 export const hasConfiguredContract = Boolean(configuredContractAddress);
 
-export const proveEligibility = async (minimumAge: AgeThreshold): Promise<EligibilityResult> => {
+export type ProofMode = 'wallet' | 'demo';
+
+const getWalletProofBridge = (): EligibilityProofBridge | undefined =>
+  typeof window === 'undefined' ? undefined : window.privageProofBridge;
+
+export const getProofMode = (walletAddress: string): ProofMode | null => {
+  if (getWalletProofBridge()) {
+    return 'wallet';
+  }
+
+  return hasDemoCredential(walletAddress) ? 'demo' : null;
+};
+
+export const proveEligibility = async (
+  minimumAge: AgeThreshold,
+  walletAddress: string,
+): Promise<EligibilityResult> => {
   if (!configuredContractAddress) {
     throw new Error(
       'The Preview contract address is not configured. Set VITE_MIDNIGHT_CONTRACT_ADDRESS after deployment.',
     );
   }
 
-  if (!window.privageProofBridge) {
+  const proofBridge = getWalletProofBridge();
+
+  if (!proofBridge) {
+    if (hasDemoCredential(walletAddress)) {
+      // Keep the proof-loading state visible during the local presentation flow.
+      await new Promise<void>((resolve) => globalThis.setTimeout(resolve, 350));
+      return proveDemoEligibility(walletAddress, minimumAge);
+    }
+
     throw new Error(
-      'No private age credential is available in this wallet. Import an issuer-issued credential, then try again.',
+      'No private credential is ready. Issue a private demo credential below, or connect a wallet with an issuer integration.',
     );
   }
 
-  const result = await window.privageProofBridge.proveEligibility({
+  const result = await proofBridge.proveEligibility({
     contractAddress: configuredContractAddress,
     minimumAge,
   });

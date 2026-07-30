@@ -4,7 +4,9 @@ import { ProofResult } from './components/ProofResult';
 import { WalletConnect } from './components/WalletConnect';
 import { useWallet } from './hooks/useWallet';
 import { supportedThresholds, type AgeThreshold } from './lib/eligibility';
-import { hasConfiguredContract, proveEligibility } from './lib/proof-gateway';
+import { clearDemoCredential, issueDemoCredential } from './lib/demo-credential';
+import { hasConfiguredContract, getProofMode, proveEligibility } from './lib/proof-gateway';
+import { DemoCredential } from './components/DemoCredential';
 
 type ProofState = 'idle' | 'eligible' | 'denied' | 'error';
 
@@ -17,10 +19,36 @@ const App = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [proofState, setProofState] = useState<ProofState>('idle');
   const [proofMessage, setProofMessage] = useState<string | null>(null);
+  const [isDemoCredentialIssued, setIsDemoCredentialIssued] = useState(false);
 
-  const generateProof = async (): Promise<void> => {
+  const clearProofResult = (): void => {
     setProofState('idle');
     setProofMessage(null);
+  };
+
+  const issueCredential = (): void => {
+    if (!wallet) {
+      return;
+    }
+
+    issueDemoCredential(wallet.address);
+    setIsDemoCredentialIssued(true);
+    clearProofResult();
+  };
+
+  const clearCredential = (): void => {
+    clearDemoCredential();
+    setIsDemoCredentialIssued(false);
+    clearProofResult();
+  };
+
+  const disconnectWallet = (): void => {
+    clearCredential();
+    disconnect();
+  };
+
+  const generateProof = async (): Promise<void> => {
+    clearProofResult();
 
     if (!wallet) {
       setProofState('error');
@@ -30,13 +58,18 @@ const App = () => {
 
     setIsGenerating(true);
     try {
-      const result = await proveEligibility(threshold);
+      const proofMode = getProofMode(wallet.address);
+      const result = await proveEligibility(threshold, wallet.address);
+      const proofSourceMessage = proofMode === 'demo'
+        ? ' The local demo witness remains in this browser session and was not sent to Preview.'
+        : '';
+
       if (result.eligible) {
         setProofState('eligible');
-        setProofMessage('Your wallet proved that you meet this policy. No age or date of birth was revealed.');
+        setProofMessage(`Your wallet proved that you meet this policy. No age or date of birth was revealed.${proofSourceMessage}`);
       } else {
         setProofState('denied');
-        setProofMessage('Your private credential does not meet the selected policy. No age or date of birth was revealed.');
+        setProofMessage(`Your private credential does not meet the selected policy. No age or date of birth was revealed.${proofSourceMessage}`);
       }
     } catch (proofError) {
       setProofState('error');
@@ -74,7 +107,14 @@ const App = () => {
           error={walletError}
           isConnecting={isConnecting}
           onConnect={connect}
-          onDisconnect={disconnect}
+          onDisconnect={disconnectWallet}
+        />
+
+        <DemoCredential
+          isConnected={Boolean(wallet)}
+          isIssued={isDemoCredentialIssued}
+          onIssue={issueCredential}
+          onClear={clearCredential}
         />
 
         <section className="proof-card" aria-labelledby="gate-heading">
